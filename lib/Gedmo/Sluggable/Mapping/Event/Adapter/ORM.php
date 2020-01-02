@@ -52,7 +52,7 @@ class ORM extends BaseAdapterORM implements SluggableAdapter
                 foreach (array_keys($mapping['targetToSourceKeyColumns']) as $i => $mappedKey) {
                     $mappedProp = $wrappedUbase->getMetadata()->fieldNames[$mappedKey];
                     $qb->andWhere($qb->expr()->eq($mappedAlias.'.'.$mappedProp, ':assoc'.$i));
-                    $qb->setParameter(':assoc'.$i, $wrappedUbase->getPropertyValue($mappedProp));
+                    $qb->setParameter(':assoc'.$i, $wrappedUbase->getPropertyValue($mappedProp), $wrappedUbase->getMetadata()->getTypeOfField($mappedProp));
                 }
             } else {
                 $qb->andWhere($qb->expr()->isNull('rec.'.$config['unique_base']));
@@ -64,7 +64,7 @@ class ORM extends BaseAdapterORM implements SluggableAdapter
             if (!$meta->isIdentifier($config['slug'])) {
                 $namedId = str_replace('.', '_', $id);
                 $qb->andWhere($qb->expr()->neq('rec.'.$id, ':'.$namedId));
-                $qb->setParameter($namedId, $value, $meta->getTypeOfField($namedId));                
+                $qb->setParameter($namedId, $value, $meta->getTypeOfField($namedId));
             }
         }
         $q = $qb->getQuery();
